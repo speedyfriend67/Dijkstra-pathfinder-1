@@ -29,9 +29,16 @@
     // Represent the grid as a 2D array
     const grid = new Array(rows).fill(0).map(() => new Array(cols).fill(0));
 
-    // Define start and end points
-    const start = { row: 2, col: 2 };
-    const end = { row: rows - 3, col: cols - 3 };
+    // Define start and end points with random positions
+    let start = getRandomPosition();
+    let end = getRandomPosition();
+
+    // Customizable colors
+    const backgroundColor = '#eee';
+    const wallColor = '#222';
+    const startColor = 'green';
+    const endColor = 'red';
+    const pathColor = 'blue';
 
     // Initialize the grid
     function initializeGrid() {
@@ -58,9 +65,9 @@
           const cell = grid[i][j];
           ctx.beginPath();
           ctx.rect(j * gridSize, i * gridSize, gridSize, gridSize);
-          ctx.fillStyle = cell.wall ? '#222' : '#eee';
+          ctx.fillStyle = cell.wall ? wallColor : backgroundColor;
           if (cell.cost !== Infinity) {
-            ctx.fillStyle = 'rgba(0, 255, 0, ' + (1 - cell.cost / 50) + ')';
+            ctx.fillStyle = `rgba(0, 255, 0, ${1 - cell.cost / 50})`;
           }
           ctx.fill();
           ctx.stroke();
@@ -72,12 +79,12 @@
     function drawPoints() {
       ctx.beginPath();
       ctx.arc(start.col * gridSize + gridSize / 2, start.row * gridSize + gridSize / 2, gridSize / 3, 0, 2 * Math.PI);
-      ctx.fillStyle = 'green';
+      ctx.fillStyle = startColor;
       ctx.fill();
 
       ctx.beginPath();
       ctx.arc(end.col * gridSize + gridSize / 2, end.row * gridSize + gridSize / 2, gridSize / 3, 0, 2 * Math.PI);
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = endColor;
       ctx.fill();
     }
 
@@ -139,7 +146,7 @@
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].col * gridSize + gridSize / 2, path[i].row * gridSize + gridSize / 2);
       }
-      ctx.strokeStyle = 'blue';
+      ctx.strokeStyle = pathColor;
       ctx.lineWidth = 4;
       ctx.stroke();
     }
@@ -173,26 +180,35 @@
       const col = Math.floor(mouseX / gridSize);
       const row = Math.floor(mouseY / gridSize);
 
-      if (grid[row] && grid[row][col]) {
-        grid[row][col].wall = !grid[row][col].wall;
-        drawGrid();
-        drawPoints();
-        if (start.row !== end.row || start.col !== end.col) {
-          dijkstra();
-        }
-      }
-    }
-
-    // Initialize the grid, draw the points, and perform Dijkstra's algorithm
-    function initialize() {
-      initializeGrid();
-      drawGrid();
-      drawPoints();
+  if (grid[row] && grid[row][col]) {
+    grid[row][col].wall = !grid[row][col].wall;
+    drawGrid();
+    drawPoints();
+    if (start.row !== end.row || start.col !== end.col) {
       dijkstra();
     }
+  }
+}
 
-    // Call the initialize function
-    initialize();
+// Generate a random position within the grid
+function getRandomPosition() {
+  return {
+    row: Math.floor(Math.random() * rows),
+    col: Math.floor(Math.random() * cols),
+  };
+}
+
+// Initialize the grid, draw the points, and perform Dijkstra's algorithm
+function initialize() {
+  initializeGrid();
+  drawGrid();
+  drawPoints();
+  dijkstra();
+}
+
+// Call the initialize function
+initialize();
+
   </script>
 </body>
 </html>
